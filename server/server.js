@@ -13,7 +13,7 @@ mongoose
 	.then(() => {
 		console.log('db connected');
 	})
-	.catch(() => console.log(err));
+	.catch((err) => console.log(err));
 
 //middlwares
 app.use(express.json());

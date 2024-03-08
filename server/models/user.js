@@ -1,4 +1,4 @@
-import { model, Schema, ObjectId, Schema } from 'mongoose';
+import { model, Schema, ObjectId } from 'mongoose';
 
 const schema = new Schema(
 	{
@@ -37,9 +37,11 @@ const schema = new Schema(
 		},
 		enquiredProperties: [{ type: ObjectId, ref: 'Ad' }],
 		wishlist: [{ type: ObjectId, ref: 'Ad' }],
-		resetCode: '',
+		resetCode: {
+			type: String, // If it's a string code
+		},
 	},
 	{ timestamps: true }
 );
 
-export default model('User', schema);
+export default model('User', schema, 'users');
