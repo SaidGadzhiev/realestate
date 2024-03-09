@@ -5,11 +5,35 @@ import { hashPassword, comparePassword } from '../helpers/auth.js';
 import User from '../models/user.js';
 import { nanoid } from 'nanoid';
 import validator from 'email-validator';
+import user from '../models/user.js';
 
 export const welcome = (req, res) => {
 	console.log('found');
 	res.status(200).json({ data: '🥓 helsdsl' });
 };
+
+//HANDLERS
+//creates token and refresh token along with the user response
+const tokenAndUserResponse = (req, res, user) => {
+	//create tokens
+	const token = jwt.sign({ _id: user._id }, config.JWT_SECRET, {
+		expiresIn: '1h',
+	});
+	const refreshToken = jwt.sign({ _id: user._id }, config.JWT_SECRET, {
+		expiresIn: '7d',
+	});
+
+	//hides or removes the password and reset code from the res.status for security reasons
+	user.password = undefined;
+	user.resetCode = undefined;
+
+	return res.status(200).json({
+		token,
+		refreshToken,
+		user,
+	});
+};
+//
 
 //sends an email to activate/verify their account
 export const preRegister = async (req, res) => {
@@ -56,7 +80,6 @@ export const preRegister = async (req, res) => {
 					console.log(err);
 					return res.status(400).json({ ok: false });
 				} else {
-					console.log(data);
 					return res.status(200).json({ ok: true });
 				}
 			}
@@ -72,6 +95,11 @@ export const register = async (req, res) => {
 	try {
 		const { email, password } = jwt.verify(req.body.token, config.JWT_SECRET);
 
+		const existingUser = await User.findOne({ email });
+		if (existingUser) {
+			return res.status(400).json({ error: 'Email is already taken' });
+		}
+
 		const hashedPassword = await hashPassword(password);
 
 		const user = await new User({
@@ -80,21 +108,7 @@ export const register = async (req, res) => {
 			password: hashedPassword,
 		}).save();
 
-		const token = jwt.sign({ _id: user._id }, config.JWT_SECRET, {
-			expiresIn: '1h',
-		});
-		const refreshToken = jwt.sign({ _id: user._id }, config.JWT_SECRET, {
-			expiresIn: '7d',
-		});
-
-		user.password = undefined;
-		user.resetCode = undefined;
-
-		return res.status(200).json({
-			token,
-			refreshToken,
-			user,
-		});
+		tokenAndUserResponse(req, res, user);
 	} catch (err) {
 		return res.status(400).json({ error: 'error....' });
 	}
@@ -111,32 +125,13 @@ export const login = async (req, res) => {
 			return res.status(400).json({ error: 'Wrong email' });
 		}
 
-		console.log(user.password);
-
 		//compare passwords
 		const match = await comparePassword(password, user.password);
 		if (!match) {
 			return res.status(400).json({ error: 'Wrong password' });
 		}
-		console.log(match);
 
-		//create tokens
-		const token = jwt.sign({ _id: user._id }, config.JWT_SECRET, {
-			expiresIn: '1h',
-		});
-		const refreshToken = jwt.sign({ _id: user._id }, config.JWT_SECRET, {
-			expiresIn: '7d',
-		});
-
-		//hides or removes the password and reset code from the res.status for security reasons
-		user.password = undefined;
-		user.resetCode = undefined;
-
-		return res.status(200).json({
-			token,
-			refreshToken,
-			user,
-		});
+		tokenAndUserResponse(req, res, user);
 	} catch (err) {
 		return res.status(400).json({ error: 'error....something wrong' });
 	}
@@ -177,7 +172,6 @@ export const forgotPassword = async (req, res) => {
 						console.log(err);
 						return res.status(400).json({ ok: false });
 					} else {
-						console.log(data);
 						return res.status(200).json({ ok: true });
 					}
 				}
@@ -194,25 +188,35 @@ export const accessAccount = async (req, res) => {
 
 		const user = await User.findOneAndUpdate({ resetCode }, { resetCode: '' });
 
-		//create tokens
-		const token = jwt.sign({ _id: user._id }, config.JWT_SECRET, {
-			expiresIn: '1h',
-		});
-		const refreshToken = jwt.sign({ _id: user._id }, config.JWT_SECRET, {
-			expiresIn: '7d',
-		});
-
-		//hides/removes the password and reset code from the res.status for security reasons
-		user.password = undefined;
-		user.resetCode = undefined;
-
-		return res.status(200).json({
-			token,
-			refreshToken,
-			user,
-		});
+		tokenAndUserResponse(req, res, user);
 	} catch (err) {
 		console.log(err);
 		return res.status(400).json({ error: 'error....wrong information' });
+	}
+};
+
+export const refreshToken = async (req, res) => {
+	try {
+		const { _id } = jwt.verify(req.headers.refresh_token, config.JWT_SECRET);
+		console.log(_id);
+
+		const user = await User.findById(_id);
+		tokenAndUserResponse(req, res, user);
+	} catch (err) {
+		console.log(err);
+		return res.status(403).json({ error: 'Refresh token failed' });
+	}
+};
+
+export const currentUser = async (req, res) => {
+	try {
+		const user = await User.findById(req.user._id);
+		user.password = undefined;
+		user.resetCode = undefined;
+
+		res.status(200).json(user);
+	} catch (err) {
+		console.log(err);
+		return res.status(403).json({ error: 'Unauthorized' });
 	}
 };
