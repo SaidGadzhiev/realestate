@@ -37,9 +37,7 @@ const schema = new Schema(
 		},
 		enquiredProperties: [{ type: ObjectId, ref: 'Ad' }],
 		wishlist: [{ type: ObjectId, ref: 'Ad' }],
-		resetCode: {
-			type: String, // If it's a string code
-		},
+		resetCode: { type: String, default: '' },
 	},
 	{ timestamps: true }
 );

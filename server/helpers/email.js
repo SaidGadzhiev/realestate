@@ -34,7 +34,7 @@ export const emailTemplate = (email, content, replyTo, subject) => {
 			},
 			Subject: {
 				Charset: 'UTF-8',
-				Data: 'Welcome to real estate website',
+				Data: subject,
 			},
 		},
 	};
