@@ -220,3 +220,58 @@ export const currentUser = async (req, res) => {
 		return res.status(403).json({ error: 'Unauthorized' });
 	}
 };
+
+export const publicProfile = async (req, res) => {
+	try {
+		const user = await User.findOne({ username: req.params.username });
+		user.password = undefined;
+		user.resetCode = undefined;
+
+		res.status(200).json(user);
+	} catch (err) {
+		console.log(err);
+		return res.status(400).json({ error: 'user not found' });
+	}
+};
+
+export const updatePassword = async (req, res) => {
+	try {
+		const { password } = req.body;
+
+		if (!password) {
+			return res.status(400).json({ error: 'password required' });
+		}
+		if (password && password.length < 6) {
+			return res
+				.status(400)
+				.json({ error: 'password should be at least 6 characters' });
+		}
+
+		const user = await User.findByIdAndUpdate(req.user._id, {
+			password: await hashPassword(password),
+		});
+
+		res.status(200).json({ ok: true });
+	} catch (err) {
+		console.log(err);
+		return res.status(400).json({ error: 'user not found' });
+	}
+};
+
+export const updateProfile = async (req, res) => {
+	try {
+		const user = await User.findByIdAndUpdate(req.user._id, req.body, {
+			new: true,
+		});
+		user.password = undefined;
+		user.resetCode = undefined;
+
+		res.status(200).json(user);
+	} catch (err) {
+		console.log(err);
+		if (err.codeName === 'DuplicateKey') {
+			return res.json({ error: 'username or email is already taken' });
+		}
+		return res.status(400).json({ error: 'user not found' });
+	}
+};
