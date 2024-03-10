@@ -57,6 +57,7 @@ export const preRegister = async (req, res) => {
 
 		const user = await User.findOne({ email });
 		if (user) {
+			console.log('email alreadt takeen');
 			return res.status(400).json({ error: 'Email is already taken' });
 		}
 
