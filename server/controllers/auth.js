@@ -182,6 +182,7 @@ export const forgotPassword = async (req, res) => {
 	}
 };
 
+//access account through the token that was sent by email
 export const accessAccount = async (req, res) => {
 	try {
 		const { resetCode } = jwt.verify(req.body.resetCode, config.JWT_SECRET);
@@ -208,6 +209,7 @@ export const refreshToken = async (req, res) => {
 	}
 };
 
+//gets the current user signed in throught the middleware (see server > middleware > auth.js)
 export const currentUser = async (req, res) => {
 	try {
 		const user = await User.findById(req.user._id);
