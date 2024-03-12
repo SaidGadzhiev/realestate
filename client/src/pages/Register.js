@@ -1,26 +1,34 @@
 import { useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
+	const [loading, setLoading] = useState(false);
+
+	const navigate = useNavigate();
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		try {
+			setLoading(true);
 			const { data } = await axios.post(`/pre-register`, {
 				email,
 				password,
 			});
 			if (data?.error) {
 				toast.error(data.error);
+				setLoading(false);
 			} else {
 				toast.success('Please check your email to activate your account');
+				setLoading(false);
+				navigate('/');
 			}
-			console.log(data);
 		} catch (err) {
-			if (err.response.error) {
+			setLoading(false);
+			if (err.response.data.error) {
 				toast.error(err.response.data.error);
 			} else {
 				toast.error('Something went wrong, try again later');
@@ -45,14 +53,19 @@ const Register = () => {
 								onChange={(e) => setEmail(e.target.value)}
 							/>
 							<input
-								type='text'
+								type='password'
 								placeholder='Enter your password'
 								className='form-control mb-4'
 								required
 								value={password}
 								onChange={(e) => setPassword(e.target.value)}
 							/>
-							<button className='btn btn-primary col-12 mb-4'>Register</button>
+							<button
+								disabled={loading}
+								className='btn btn-primary col-12 mb-4'
+							>
+								{loading ? 'Waiting...' : 'Register'}
+							</button>
 						</form>
 					</div>
 				</div>
