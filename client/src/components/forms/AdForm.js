@@ -3,6 +3,9 @@ import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 import { GOOGLE_PLACES_KEY } from '../../config';
 import CurrencyInput from 'react-currency-input-field';
 import ImageUpload from './ImageUpload';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const AdForm = ({ action, type }) => {
 	const [ad, setAd] = useState({
@@ -14,11 +17,34 @@ const AdForm = ({ action, type }) => {
 		bathrooms: '',
 		carpark: '',
 		landsize: '',
-		type: '',
 		title: '',
 		description: '',
 		loading: false,
+		type,
+		action,
 	});
+
+	const navigate = useNavigate();
+
+	const handleClick = async () => {
+		try {
+			setAd({ ...ad, loading: true });
+
+			const { data } = await axios.post('/ad', ad);
+			console.log('response ', data);
+			if (data?.error) {
+				toast.error(data.error);
+				setAd({ ...ad, loading: false });
+			} else {
+				toast.success('Ad created successfully');
+				setAd({ ...ad, loading: false });
+				// navigate('/dashboard');
+			}
+		} catch (err) {
+			console.log(err);
+			setAd({ ...ad, loading: false });
+		}
+	};
 
 	return (
 		<>
@@ -36,13 +62,14 @@ const AdForm = ({ action, type }) => {
 					}}
 				/>
 			</div>
-
-			<CurrencyInput
-				placeholder='Enter price'
-				defaultValue={ad.price}
-				className='form-control mb-3'
-				onValueChange={(value) => setAd({ ...ad, price: value })}
-			/>
+			<div>
+				<CurrencyInput
+					placeholder='Enter price'
+					defaultValue={ad.price}
+					className='form-control mb-3'
+					onValueChange={(value) => setAd({ ...ad, price: value })}
+				/>
+			</div>
 
 			<input
 				type='number'
@@ -94,7 +121,9 @@ const AdForm = ({ action, type }) => {
 				onChange={(e) => setAd({ ...ad, description: e.target.value })}
 			/>
 
-			<button className='btn btn-primary'>Submit</button>
+			<button onClick={handleClick} className='btn btn-primary'>
+				Submit
+			</button>
 
 			{JSON.stringify(ad, null, 4)}
 		</>
