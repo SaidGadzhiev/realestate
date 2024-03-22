@@ -38,7 +38,7 @@ const AdForm = ({ action, type }) => {
 			} else {
 				toast.success('Ad created successfully');
 				setAd({ ...ad, loading: false });
-				// navigate('/dashboard');
+				navigate('/dashboard');
 			}
 		} catch (err) {
 			console.log(err);
@@ -71,32 +71,38 @@ const AdForm = ({ action, type }) => {
 				/>
 			</div>
 
-			<input
-				type='number'
-				min='0'
-				className='form-control mb3'
-				placeholder='How many bedrooms'
-				value={ad.bedrooms}
-				onChange={(e) => setAd({ ...ad, bedrooms: e.target.value })}
-			/>
+			{type === 'House' ? (
+				<>
+					<input
+						type='number'
+						min='0'
+						className='form-control mb3'
+						placeholder='How many bedrooms'
+						value={ad.bedrooms}
+						onChange={(e) => setAd({ ...ad, bedrooms: e.target.value })}
+					/>
 
-			<input
-				type='number'
-				min='0'
-				className='form-control mb3'
-				placeholder='How many bathrooms'
-				value={ad.bathrooms}
-				onChange={(e) => setAd({ ...ad, bathrooms: e.target.value })}
-			/>
+					<input
+						type='number'
+						min='0'
+						className='form-control mb3'
+						placeholder='How many bathrooms'
+						value={ad.bathrooms}
+						onChange={(e) => setAd({ ...ad, bathrooms: e.target.value })}
+					/>
 
-			<input
-				type='number'
-				min='0'
-				className='form-control mb3'
-				placeholder='How many car parks'
-				value={ad.carpark}
-				onChange={(e) => setAd({ ...ad, carpark: e.target.value })}
-			/>
+					<input
+						type='number'
+						min='0'
+						className='form-control mb3'
+						placeholder='How many car parks'
+						value={ad.carpark}
+						onChange={(e) => setAd({ ...ad, carpark: e.target.value })}
+					/>
+				</>
+			) : (
+				<></>
+			)}
 
 			<input
 				type='text'
@@ -121,11 +127,14 @@ const AdForm = ({ action, type }) => {
 				onChange={(e) => setAd({ ...ad, description: e.target.value })}
 			/>
 
-			<button onClick={handleClick} className='btn btn-primary'>
-				Submit
+			<button
+				onClick={handleClick}
+				className={`btn btn-primary  mb-5 ${ad.loading ? 'disabled' : ''}`}
+			>
+				{ad.loading ? 'Saving' : 'Submit'}
 			</button>
 
-			{JSON.stringify(ad, null, 4)}
+			{/* {JSON.stringify(ad, null, 4)} */}
 		</>
 	);
 };
