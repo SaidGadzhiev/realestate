@@ -108,3 +108,23 @@ export const create = async (req, res) => {
 		return res.status(400).json({ error: 'Error saving' });
 	}
 };
+
+export const ads = async (req, res) => {
+	try {
+		const adsForSell = await Ad.find({ action: 'Sell' })
+			.select('-googleMap -location -photo.Key -photo.key -photo.ETag')
+			.sort({ createAt: -1 })
+			.limit(12);
+
+		const adsForRent = await Ad.find({ action: 'Rent' })
+			.select('-googleMap -location -photo.Key -photo.key -photo.ETag')
+			.sort({ createAt: -1 })
+			.limit(12);
+
+		console.log({ adsForSell, adsForSell });
+
+		return res.json({ adsForSell, adsForRent });
+	} catch (err) {
+		return res.status(400).json({ error: 'Error getting the ads' });
+	}
+};
