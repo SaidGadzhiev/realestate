@@ -128,3 +128,29 @@ export const ads = async (req, res) => {
 		return res.status(400).json({ error: 'Error getting the ads' });
 	}
 };
+
+export const read = async (req, res) => {
+	console.log(req.params.slug);
+	try {
+		const ad = await Ad.findOne({ slug: req.params.slug }).populate(
+			'postedBy',
+			'name username email phone company photo.Location'
+		);
+		const related = await Ad.find({
+			//$ne = excluding
+			_id: { $ne: ad._id },
+			action: ad.action,
+			type: ad.type,
+			address: {
+				$regex: ad.googleMap[0].city,
+				$options: 'i',
+			},
+		})
+			.limit(3)
+			.select('-photos.Key -photos.ket -photos.ETag -photos.Bucket -googleMap');
+
+		res.json({ ad, related });
+	} catch (err) {
+		return res.status(400).json({ error: 'Error getting the ads' });
+	}
+};
