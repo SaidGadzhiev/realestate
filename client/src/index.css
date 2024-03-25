@@ -12,3 +12,8 @@
 	box-shadow: 0.4rem 0.4rem 1rem rgba(0, 0, 0, 0.15) !important;
 	transition: ease-in-out 0.2s;
 }
+
+.adviewImg {
+	object-fit: cover;
+	max-height: 500px !important;
+}

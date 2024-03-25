@@ -3,20 +3,12 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import ImageGallery from '../components/misc/ImageGallery';
 import Logo from '../logo.svg';
-import Gallery from 'react-photo-gallery';
+import AdFeatures from '../components/cards/AdFeatures';
+import { formatNumber } from '../helpers/ad';
+import dayjs from 'dayjs';
+const relativeTime = require('dayjs/plugin/relativeTime');
 
-const testPhotos = [
-	{
-		src: 'http://example.com/example/img1.jpg',
-		width: 4,
-		height: 3,
-	},
-	{
-		src: 'http://example.com/example/img2.jpg',
-		width: 1,
-		height: 1,
-	},
-];
+dayjs.extend(relativeTime);
 
 const AdView = () => {
 	const params = useParams();
@@ -32,6 +24,7 @@ const AdView = () => {
 
 	const fetchAd = async () => {
 		try {
+			console.log(params.slug);
 			const { data } = await axios.get(`/ad/${params.slug}`);
 			setAd(data.ad);
 			setRelated(data.related);
@@ -60,8 +53,29 @@ const AdView = () => {
 
 	return (
 		<>
-			{/* <Gallery photos={testPhotos} /> */}
-			{/* <ImageGallery photos={generatePhotosArray(ad?.photos)} /> */}
+			<div className='container-fluid'>
+				<div className='row mt-2'>
+					<div className='col-lg-4'>
+						<button className='btn btn-primary disabled mt-2'>
+							{ad.type ? ad.type : ''} for {ad.action ? ad.action : ''}
+						</button>
+
+						<div className='mt-4 mb-2'>
+							{ad?.sold ? 'Off Market' : 'In Market'}
+						</div>
+						<h1>{ad.address}</h1>
+						<AdFeatures ad={ad} />
+						<h3 className='mt-4 h2'>
+							{' '}
+							{ad?.price ? formatNumber(ad.price) : ''}
+						</h3>
+						<p className='text-muted'>{dayjs(ad?.createdAt).fromNow()}</p>
+					</div>
+					<div className='col-lg-8'>
+						<ImageGallery photos={generatePhotosArray(ad?.photos)} />
+					</div>
+				</div>
+			</div>
 			<pre>{JSON.stringify({ ad, related })}</pre>
 		</>
 	);
