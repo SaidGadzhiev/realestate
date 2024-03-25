@@ -44,7 +44,7 @@ const AdView = () => {
 		if (photos?.length > 0) {
 			const x = photos?.length === 1 ? 2 : 4;
 			let arr = [];
-
+			//test
 			photos.map((p) =>
 				arr.push({
 					src: p.Location,
