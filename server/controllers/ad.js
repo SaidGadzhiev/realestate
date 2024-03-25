@@ -84,8 +84,10 @@ export const create = async (req, res) => {
 				coordinates: [geo?.[0]?.longitude, geo?.[0].latitude],
 			},
 			googleMap: geo,
-			slug: slugify(`${type}-${address}-${price}-${nanoid(6)}`),
+			slug: slugify(`${type}-${address}-${price}-${nanoid(10)}`),
 		}).save();
+
+		console.log('THIS IS THE AD SLUG: ', ad.slug);
 
 		//make user role => seller
 		const user = await User.findByIdAndUpdate(

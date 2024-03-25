@@ -19,9 +19,22 @@ const ImageGallery = ({ photos }) => {
 		setIsOpen(false);
 	};
 
+	console.log(photos[0].src);
+
 	return (
 		<>
-			<Gallery photos={photos} onClick={openLightBox} />
+			{photos &&
+				photos.map((p, index) => {
+					return (
+						<img
+							className='adviewImg'
+							key={index}
+							src={p.src}
+							alt={`Image ${index}`}
+						/>
+					);
+				})}
+			{/* <Gallery photos={photos} onClick={openLightBox} />
 			<ModalGateway>
 				{isOpen ? (
 					<Modal onClose={closeLightBox}>
@@ -35,7 +48,7 @@ const ImageGallery = ({ photos }) => {
 						/>
 					</Modal>
 				) : null}
-			</ModalGateway>
+			</ModalGateway> */}
 		</>
 	);
 };
