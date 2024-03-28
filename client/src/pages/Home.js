@@ -16,7 +16,6 @@ const Home = () => {
 	const fetchAds = async () => {
 		try {
 			const { data } = await axios.get('/ads');
-			console.log(data.adsForSell);
 			setAdsForSell(data.adsForSell);
 			setAdsForRent(data.adsForRent);
 		} catch (err) {
@@ -24,7 +23,6 @@ const Home = () => {
 		}
 	};
 
-	console.log(adsForSell, adsForRent);
 	return (
 		<div>
 			<div>

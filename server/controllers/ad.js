@@ -156,3 +156,43 @@ export const read = async (req, res) => {
 		return res.status(400).json({ error: 'Error getting the ads' });
 	}
 };
+
+export const addToWishList = async (req, res) => {
+	try {
+		const user = await User.findByIdAndUpdate(
+			req.user._id,
+			{
+				$addToSet: { wishlist: req.body.adId },
+			},
+			{ new: true }
+		);
+
+		const { password, resetCode, ...rest } = user._doc;
+
+		res.json(rest);
+	} catch (err) {
+		console.log(err);
+		return res.status(400).json({ error: 'Error adding item to the wishlist' });
+	}
+};
+
+export const removeFromWishList = async (req, res) => {
+	try {
+		const user = await User.findByIdAndUpdate(
+			req.user._id,
+			{
+				$pull: { wishlist: req.params.adId },
+			},
+			{ new: true }
+		);
+
+		const { password, resetCode, ...rest } = user._doc;
+
+		res.json(rest);
+	} catch (err) {
+		console.log(err);
+		return res
+			.status(400)
+			.json({ error: 'Error removing item from the wishlist' });
+	}
+};
