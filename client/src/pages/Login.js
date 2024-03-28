@@ -3,7 +3,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/auth';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const Login = () => {
 	const [email, setEmail] = useState('');
@@ -13,6 +13,8 @@ const Login = () => {
 	const [auth, setAuth] = useAuth();
 
 	const navigate = useNavigate();
+
+	const location = useLocation();
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -30,7 +32,10 @@ const Login = () => {
 				localStorage.setItem('auth', JSON.stringify(data));
 				toast.success('Logged in successfuly');
 				setLoading(false);
-				navigate('/');
+				//location used to redirect user if he was logged out and wanted to revisit the same page after logging in
+				location?.state != null
+					? navigate(location.state)
+					: navigate('/dashboard');
 			}
 		} catch (err) {
 			setLoading(false);

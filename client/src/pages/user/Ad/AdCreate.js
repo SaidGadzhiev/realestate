@@ -6,8 +6,6 @@ export default function AdCreate() {
 	const [sell, setSell] = useState(false);
 	const [rent, setRent] = useState(false);
 
-	console.log(sell);
-
 	const navigate = useNavigate();
 
 	const handleSell = () => {

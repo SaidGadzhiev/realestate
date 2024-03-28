@@ -19,8 +19,6 @@ const ImageGallery = ({ photos }) => {
 		setIsOpen(false);
 	};
 
-	console.log(photos[0].src);
-
 	return (
 		<>
 			{photos &&

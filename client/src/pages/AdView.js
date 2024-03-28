@@ -6,6 +6,7 @@ import Logo from '../logo.svg';
 import AdFeatures from '../components/cards/AdFeatures';
 import { formatNumber } from '../helpers/ad';
 import dayjs from 'dayjs';
+import Wishlist from '../components/misc/Wishlist';
 const relativeTime = require('dayjs/plugin/relativeTime');
 
 dayjs.extend(relativeTime);
@@ -24,7 +25,6 @@ const AdView = () => {
 
 	const fetchAd = async () => {
 		try {
-			console.log(params.slug);
 			const { data } = await axios.get(`/ad/${params.slug}`);
 			setAd(data.ad);
 			setRelated(data.related);
@@ -56,9 +56,12 @@ const AdView = () => {
 			<div className='container-fluid'>
 				<div className='row mt-2'>
 					<div className='col-lg-4'>
-						<button className='btn btn-primary disabled mt-2'>
-							{ad.type ? ad.type : ''} for {ad.action ? ad.action : ''}
-						</button>
+						<div className='d-flex justify-content-between'>
+							<button className='btn btn-primary disabled mt-2'>
+								{ad.type ? ad.type : ''} for {ad.action ? ad.action : ''}
+							</button>
+							<Wishlist ad={ad} />
+						</div>
 
 						<div className='mt-4 mb-2'>
 							{ad?.sold ? 'Off Market' : 'In Market'}
