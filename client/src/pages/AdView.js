@@ -7,6 +7,7 @@ import AdFeatures from '../components/cards/AdFeatures';
 import { formatNumber } from '../helpers/ad';
 import dayjs from 'dayjs';
 import Wishlist from '../components/misc/Wishlist';
+import MapCard from '../components/cards/MapCart';
 const relativeTime = require('dayjs/plugin/relativeTime');
 
 dayjs.extend(relativeTime);
@@ -79,7 +80,13 @@ const AdView = () => {
 					</div>
 				</div>
 			</div>
-			<pre>{JSON.stringify({ ad, related })}</pre>
+			<div className='container'>
+				<div className='row'>
+					<div className='col-lg-8 offset-lg-2'>
+						<MapCard ad={ad} />
+					</div>
+				</div>
+			</div>
 		</>
 	);
 };
